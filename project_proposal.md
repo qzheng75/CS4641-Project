@@ -6,6 +6,9 @@ description: A summary of the initial goals of the project
 
 ## Project Proposal
 
+### Demo Video
+Here is the link to our [demo video](https://youtu.be/bam3MmC0Zl4)!
+
 ### Introduction/Background
 
 #### Literature Review
