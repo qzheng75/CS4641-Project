@@ -3,11 +3,12 @@ from typing import List
 
 from tqdm import tqdm
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 import librosa
 import torch
 from torch.utils.data import Dataset
+
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 
 feature_args = {
