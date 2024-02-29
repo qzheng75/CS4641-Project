@@ -17,7 +17,7 @@ feature_args = {
     'n_derivatives': 2 # number of maximum order of derivatives to take
 }
 
-class AudioDataset(Dataset):
+class AudioOTFDataset(Dataset):
     def __init__(self,
                  root_folder: str,
                  filenames: List[str],
@@ -28,7 +28,7 @@ class AudioDataset(Dataset):
                  label_encoding: str='Onehot',
                  **kwargs) -> None:
         """
-        Init method for AudioDataset
+        Init method for AudioOTFDataset
 
         Args:
             root_folder (str): root folder where data are stored
@@ -38,7 +38,7 @@ class AudioDataset(Dataset):
             scaling_strategy (str): strategy for scaling processed data
             name (str, optional): name of the dataset. Defaults to 'Audio Dataset'.
         """
-        super(AudioDataset, self).__init__()
+        super(AudioOTFDataset, self).__init__()
         self.root_folder = root_folder
         self.dataset_name = name
         self.num_frames = num_frames  
@@ -55,6 +55,8 @@ class AudioDataset(Dataset):
             self.encoder = LabelEncoder()
             self.labels = self.encoder.fit_transform(np.array(labels))
             self.num_classes = np.max(self.labels) + 1
+            
+        self.labels = self.to_tensor(self.labels)
         
         assert len(filenames) == len(labels),\
             f'Number of files should match number of labels, but got {len(filenames)}'
@@ -173,7 +175,7 @@ class AudioDataset(Dataset):
             x = self.__compute_features(x)
             if self.scaling_strategy is not None:
                 x = self.__scaling(x)
-            x = self.to_tensor(x)
+            x = self.to_tensor(x).view(1, -1).squeeze()
             vec_list.append(x)
         self.X = torch.stack(vec_list)
             
@@ -188,7 +190,7 @@ class AudioDataset(Dataset):
         Returns:
             torch.tensor: vectorized representation of the audio
         """
-        return self.X[index]
+        return self.X[index], self.labels[index]
     
     def get_raw_label(self, index: int) -> np.ndarray:
         """
@@ -231,9 +233,10 @@ class AudioDataset(Dataset):
         return f"====== {self.dataset_name} ======\n" +\
             f"Root folder: {self.root_folder}\n" +\
             f"Number of samples: {len(self)}\n" +\
-            f"Shape of one sample: {self.__getitem__(0).size()}\n" +\
+            f"Shape of one sample: {self.__getitem__(0)[0].size()}\n" +\
             f"Number of classes: {self.num_classes}\n" +\
             f"Features:\n\tn_mfcc: {feature_args['n_mfcc']}\n\tn_chroma: {feature_args['n_chroma']}\n" +\
             f"\tn_derivatives: {feature_args['n_derivatives']}\n" +\
             f"Scaling strategy: {self.scaling_strategy}\n" +\
             "=" * l
+            

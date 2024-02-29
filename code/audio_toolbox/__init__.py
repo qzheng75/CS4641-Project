@@ -1,5 +1,6 @@
-__all__ = ['AudioVisualizer', 'AudioDataset']
+__all__ = ['AudioVisualizer', 'AudioOTFDataset', 'ModelTrainer']
 
 from .preprocess import AudioVisualizer
-from .dataset import AudioDataset
+from .dataset import AudioOTFDataset
 from .metrics import *
+from .trainer import ModelTrainer
