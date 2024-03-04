@@ -26,6 +26,8 @@ class AudioOTFDataset(Dataset):
                  scaling_strategy: str,
                  name: str='Audio Dataset',
                  label_encoding: str='Onehot',
+                 shuffle: bool=False,
+                 random_state: int=0,
                  **kwargs) -> None:
         """
         Init method for AudioOTFDataset
@@ -79,6 +81,11 @@ class AudioOTFDataset(Dataset):
             
         self.X = [self.__load_from_folder(i) for i in tqdm(range(len(filenames)), desc=f"Loading audios for {self.dataset_name}")]
         self.__process_raw_audio()
+        if shuffle:
+            torch.random.manual_seed(random_state)
+            shuffled_index = torch.randperm(len(self.X))
+            self.X = self.X[shuffled_index]
+            self.labels = self.labels[shuffled_index]
             
     def __load_from_folder(self, idx: int) -> np.ndarray:
         """
