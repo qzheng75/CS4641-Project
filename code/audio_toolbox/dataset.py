@@ -39,6 +39,9 @@ class AudioOTFDataset(Dataset):
             num_frames (int): number of frames to be considered
             scaling_strategy (str): strategy for scaling processed data
             name (str, optional): name of the dataset. Defaults to 'Audio Dataset'.
+            label_encoding (str, optional): method to encode raw labels. Defaults to 'Onehot'.
+            shuffle (bool, optional): whether to shuffle the data. Defaults to False.
+            random_state (int, optional): seed for shuffling the data. Defaults to 0.
         """
         super(AudioOTFDataset, self).__init__()
         self.root_folder = root_folder
@@ -177,6 +180,9 @@ class AudioOTFDataset(Dataset):
         return len(self.filenames)
     
     def __process_raw_audio(self):
+        """
+        Process the raw audio and store the processed audios in self.X
+        """
         vec_list = []
         for x in tqdm(self.X, desc=f'Processing for {self.dataset_name}'):
             x = self.__compute_features(x)

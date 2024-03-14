@@ -99,7 +99,7 @@ class ModelTrainer:
             os.makedirs(save_state_dict_folder)
             save_state_dict_path = os.path.join(save_state_dict_folder, 'best_model.pt')
             torch.save(best_state_dict, save_state_dict_path)   
-            
+    
     def validate(self, split):
         self.model.eval()
         batch_loss = []
