@@ -26,8 +26,10 @@ class AudioOTFDataset(Dataset):
                  scaling_strategy: str,
                  name: str='Audio Dataset',
                  label_encoding: str='Onehot',
+                 flatten_features: bool=True,
                  shuffle: bool=False,
                  random_state: int=0,
+                 device: str='cpu',
                  **kwargs) -> None:
         """
         Init method for AudioOTFDataset
@@ -42,14 +44,17 @@ class AudioOTFDataset(Dataset):
             label_encoding (str, optional): method to encode raw labels. Defaults to 'Onehot'.
             shuffle (bool, optional): whether to shuffle the data. Defaults to False.
             random_state (int, optional): seed for shuffling the data. Defaults to 0.
+            device (str, optional): device for tensors. Defaults to cpu.
         """
         super(AudioOTFDataset, self).__init__()
         self.root_folder = root_folder
         self.dataset_name = name
-        self.num_frames = num_frames  
+        self.num_frames = num_frames
+        self.device = device  
                 
         self.filenames = filenames
         self.raw_labels = labels
+        self.flatten_features = flatten_features
         self.kwargs = kwargs
         
         if label_encoding == 'Onehot':
@@ -127,14 +132,14 @@ class AudioOTFDataset(Dataset):
         chroma = librosa.feature.chroma_stft(y=x, n_chroma=n_chroma)
         
         # Delta terms Shape: (n_derivatives * n_mfcc, num_frames)
-        mfcc_deltas = np.concatenate([librosa.feature.delta(mfcc, order=i) for i in range(1, n_derivatives + 1)], axis=0)
-        chroma_deltas = np.concatenate([librosa.feature.delta(chroma, order=i) for i in range(1, n_derivatives + 1)], axis=0)
+        mfcc_deltas = np.stack([librosa.feature.delta(mfcc, order=i) for i in range(1, n_derivatives + 1)], axis=0)
+        chroma_deltas = np.stack([librosa.feature.delta(chroma, order=i) for i in range(1, n_derivatives + 1)], axis=0)
         
         # Concatenate all features together
-        features = np.concatenate([mfcc[:, :self.num_frames],
-                                   mfcc_deltas[:, :self.num_frames],
-                                   chroma[:, :self.num_frames],
-                                   chroma_deltas[:, :self.num_frames]], axis=0)
+        features = np.concatenate([mfcc[:, :self.num_frames][np.newaxis, :, :],
+                                   mfcc_deltas[:, :, :self.num_frames],
+                                   chroma[:, :self.num_frames][np.newaxis, :, :],
+                                   chroma_deltas[:, :, :self.num_frames]], axis=0)
         
         # Final feature shape: ((2 * n_derivatives + 2) * n_mfcc, num_frames)
         return features
@@ -168,7 +173,7 @@ class AudioOTFDataset(Dataset):
         Returns:
             torch.tensor: transformed tensor
         """
-        return torch.tensor(x)
+        return torch.tensor(x, device=self.device)
     
     def __len__(self) -> int:
         """
@@ -188,7 +193,10 @@ class AudioOTFDataset(Dataset):
             x = self.__compute_features(x)
             if self.scaling_strategy is not None:
                 x = self.__scaling(x)
-            x = self.to_tensor(x).view(1, -1).squeeze()
+            if self.flatten_features:
+                x = self.to_tensor(x).view(1, -1).squeeze()
+            else:
+                x = self.to_tensor(x)
             vec_list.append(x)
         self.X = torch.stack(vec_list)
             
