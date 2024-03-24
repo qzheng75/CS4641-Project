@@ -105,7 +105,7 @@ class ModelTrainer:
         batch_loss = []
         for _, (data, targets) in enumerate(self.dataloaders[f'{split}_dataloader']):
             with torch.no_grad():
-                out = self.model(data)
+                out = self.model(data).softmax(dim=1)
                 loss = self.loss_fn(out, targets)
             batch_loss.append(loss.item())
         return np.mean(batch_loss)
