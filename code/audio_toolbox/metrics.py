@@ -3,6 +3,7 @@ import torch
 
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.model_selection import StratifiedKFold
 
 
 def audio_dataset_split(data, label, train_val_test_ratio=None, random_state=None):
@@ -51,6 +52,7 @@ def calculate_acc(model, X_flattened, y_labels):
     acc = 1 - np.mean(mismatch)
     return acc * 100, np.where(y_pred == y_labels)[0], np.where(y_pred != y_labels)[0]
 
+
 def precision_recall(model, X_flattened, y_labels, return_each_class=False):
     """
     Compute the confusion matrix, precision, recall and f1 score.
@@ -79,3 +81,21 @@ def precision_recall(model, X_flattened, y_labels, return_each_class=False):
     f1 = f1_score(y_labels, y_pred, average=avg, zero_division=np.nan)
     return conf_matrix, precision, recall, f1
     
+
+def kfold_validation(model, data, label, n_splits, random_state = 42, shuffle=True):
+    accs = []
+    precisions = []
+    recalls = []
+    f1s = []
+    kf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+    for train_index, test_index in kf.split(data, label):
+        X_train, X_test, y_train, y_test = data[train_index], data[test_index], label[train_index], label[test_index]
+        model.fit(X_train, y_train)
+        acc,_,_ = calculate_acc(model, X_test, y_test)
+        _, precision, recall, f1 = precision_recall(model, data, label, return_each_class=False)
+        accs.append(acc)
+        precisions.append(precision)
+        recalls.append(recall)
+        f1s.append(f1)
+    
+    return np.mean(accs), np.mean(precisions), np.mean(recalls), np.mean(f1s)
