@@ -43,6 +43,10 @@ def calculate_acc(model, X_flattened, y_labels):
         np.ndarray: indices where pred != label (mismatches)
     """
     y_pred = model.predict(X_flattened)
+    if isinstance(y_pred, torch.Tensor):
+        y_pred = y_pred.cpu().numpy()
+    if isinstance(y_labels, torch.Tensor):
+        y_labels = y_labels.cpu().numpy()
     mismatch = y_pred != y_labels
     acc = 1 - np.mean(mismatch)
     return acc * 100, np.where(y_pred == y_labels)[0], np.where(y_pred != y_labels)[0]
@@ -65,6 +69,10 @@ def precision_recall(model, X_flattened, y_labels, return_each_class=False):
     """
     avg = None if return_each_class else 'macro'
     y_pred = model.predict(X_flattened)
+    if isinstance(y_pred, torch.Tensor):
+        y_pred = y_pred.cpu().numpy()
+    if isinstance(y_labels, torch.Tensor):
+        y_labels = y_labels.cpu().numpy()
     conf_matrix = confusion_matrix(y_labels, y_pred)
     precision = precision_score(y_labels, y_pred, average=avg, zero_division=np.nan)
     recall = recall_score(y_labels, y_pred, average=avg, zero_division=np.nan)
