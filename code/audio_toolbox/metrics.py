@@ -1,6 +1,32 @@
 import numpy as np
+import torch
+
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score
+
+
+def audio_dataset_split(data, label, train_val_test_ratio=None, random_state=None):
+    if train_val_test_ratio is None:
+        train_val_test_ratio = (0.9, 0.05, 0.05)
+    
+    if random_state is not None:
+        torch.manual_seed(random_state)
+    
+    n = data.shape[0]
+    indices = torch.randperm(n)
+    
+    train_size = int(train_val_test_ratio[0] * n)
+    val_size = int(train_val_test_ratio[1] * n)
+    
+    train_indices = indices[:train_size]
+    val_indices = indices[train_size:train_size+val_size]
+    test_indices = indices[train_size+val_size:]
+    
+    train_data, val_data, test_data = data[train_indices], data[val_indices], data[test_indices]
+    train_label, val_label, test_label = label[train_indices], label[val_indices], label[test_indices]
+    
+    return train_data, train_label, val_data, val_label, test_data, test_label
+    
 
 def calculate_acc(model, X_flattened, y_labels):
     """
