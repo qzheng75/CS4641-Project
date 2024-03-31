@@ -1,8 +1,10 @@
 import os
 from typing import List
+from PIL import Image
 
 from tqdm import tqdm
 import numpy as np
+import matplotlib.pyplot as plt
 from audiomentations import Compose, AddGaussianNoise, TimeStretch, PitchShift, Shift
 import librosa
 import torch
@@ -296,3 +298,112 @@ class AudioOTFDataset(Dataset):
             f"Scaling strategy: {self.scaling_strategy}\n" +\
             "=" * l
             
+            
+class AudioImageDataset(Dataset):
+    def __init__(self, root_folder, filenames, labels,
+                 label_encoding: str='Onehot',
+                 name: str='Full dataset') -> None:
+        super(AudioImageDataset, self).__init__()
+        self.filenames = filenames
+        self.raw_labels = labels
+        self.dataset_name = name
+        self.root_folder = root_folder
+        
+        self.X = [self.__load_from_folder(i) for i in tqdm(range(len(filenames)), desc=f"Loading audios for {self.dataset_name}")]
+        
+        if label_encoding == 'Onehot':
+            self.encoder = OneHotEncoder()
+            self.labels = self.encoder.fit_transform(np.array(labels).reshape(-1, 1))
+            self.num_classes = self.labels.shape[1]
+        else:
+            self.encoder = LabelEncoder()
+            self.labels = self.encoder.fit_transform(np.array(labels))
+            self.num_classes = np.max(self.labels) + 1
+            
+        self.X = self.__generate_images()
+            
+    def __generate_images(self):
+        images = []
+        for x, sr in tqdm(self.X, desc=f'Processing for {self.dataset_name}'):
+            mel_spectrogram = librosa.feature.melspectrogram(y=x, sr=sr)
+            mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
+
+            librosa.display.specshow(mel_spectrogram_db, sr=sr, fmax=8000)
+            plt.axis('off')
+            plt.savefig('temp.png', bbox_inches='tight', pad_inches=0)
+            plt.close()
+            
+            img = Image.open('temp.png')
+            images.append(np.array(img))
+        os.remove('temp.png')
+        return np.stack(images)
+        
+    def __load_from_folder(self, idx: int) -> np.ndarray:
+        """
+        Load one audio based on index.
+
+        Args:
+            idx (int): index of audio to load
+
+        Returns:
+            np.ndarray: vectorized representation of the loaded audio
+            int: sample rate of the audio
+        """
+        filename, label = self.filenames[idx], self.raw_labels[idx]
+        audio_path = os.path.join(self.root_folder, 'genres_original', label, filename)
+        x, sample_rate = librosa.load(audio_path)
+        return x, sample_rate
+    
+    def to_tensor(self, **kwargs):
+        return torch.tensor(self.X, **kwargs)
+    
+    def __getitem__(self, index: int) -> torch.tensor:
+        """
+        Get a sample from the dataset.
+
+        Args:
+            index (int): index of the sample
+
+        Returns:
+            torch.tensor: vectorized representation of the audio
+        """
+        return self.X[index], self.labels[index]
+
+def visualize_confusion_matrices(conf_matrices, splits, suptitle):
+
+    # Create subplots
+    fig, axes = plt.subplots(1, len(splits), figsize=(15, 5))
+
+    # Plot each confusion matrix
+    for i, (conf_matrix, split) in enumerate(zip(conf_matrices, splits)):
+        ax = axes[i]
+        ax.imshow(conf_matrix, cmap='Blues', interpolation='nearest')
+
+        # Add color bar
+        cb = ax.figure.colorbar(ax.imshow(conf_matrix, cmap='Blues', interpolation='nearest'), ax=ax, fraction=0.046, pad=0.04)
+
+        # Add labels
+        ax.set_title(f'{split} Confusion Matrix')
+        ax.set_xlabel('Predicted Label')
+        ax.set_ylabel('True Label')
+        ax.grid(False)
+
+        # Add tick marks
+        class_names = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz',
+            'metal', 'pop', 'reggae', 'rock']
+        tick_marks = np.arange(len(class_names))
+        ax.set_xticks(tick_marks)
+        ax.set_yticks(tick_marks)
+        ax.set_xticklabels(class_names, rotation=45)
+        ax.set_yticklabels(class_names)
+
+        # Add text annotations
+        thresh = conf_matrix.max() / 2.
+        for i in range(conf_matrix.shape[0]):
+            for j in range(conf_matrix.shape[1]):
+                ax.text(j, i, format(conf_matrix[i, j], 'd'),
+                        horizontalalignment="center",
+                        color="white" if conf_matrix[i, j] > thresh else "black")
+
+        # plt.tight_layout()
+        fig.suptitle(suptitle, fontsize=16)
