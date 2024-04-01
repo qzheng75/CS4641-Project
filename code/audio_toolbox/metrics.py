@@ -52,7 +52,6 @@ def calculate_acc(model, X_flattened, y_labels):
     acc = 1 - np.mean(mismatch)
     return acc * 100, np.where(y_pred == y_labels)[0], np.where(y_pred != y_labels)[0]
 
-
 def precision_recall(model, X_flattened, y_labels, return_each_class=False):
     """
     Compute the confusion matrix, precision, recall and f1 score.
@@ -80,7 +79,6 @@ def precision_recall(model, X_flattened, y_labels, return_each_class=False):
     recall = recall_score(y_labels, y_pred, average=avg, zero_division=np.nan)
     f1 = f1_score(y_labels, y_pred, average=avg, zero_division=np.nan)
     return conf_matrix, precision, recall, f1
-    
 
 def kfold_validation(model, data, label, n_splits, random_state = 42, shuffle=True):
     accs = []
