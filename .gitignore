@@ -7,3 +7,8 @@ Gemfile.lock
 .code/.venv/.
 .code/archive/.
 .code/audio_toolbox/__pycache__/.
+/code/processed_data
+/code/archive
+/code/audio_toolbox/__pycache__
+/code/audio_toolbox/__pycache__
+/code/audio_toolbox/__pycache__
