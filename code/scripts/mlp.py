@@ -39,12 +39,9 @@ if __name__ == '__main__':
     val_scaled = scaler.transform(X_val_flat)
     test_scaled = scaler.transform(X_test_flat)
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu' 
-    print(f"Using {device} to train the model.")
-    train_data = torch.tensor(pca.fit_transform(train_scaled), dtype=torch.float, device=device)
-    val_data = torch.tensor(pca.transform(val_scaled), dtype=torch.float, device=device)
-    test_data = torch.tensor(pca.transform(test_scaled), dtype=torch.float, device=device)
-    y_train, y_val, y_test = y_train.to(device), y_val.to(device), y_test.to(device)
+    train_data = torch.tensor(pca.fit_transform(train_scaled), dtype=torch.float)
+    val_data = torch.tensor(pca.transform(val_scaled), dtype=torch.float)
+    test_data = torch.tensor(pca.transform(test_scaled), dtype=torch.float)
 
     datasets = {
         'train': TensorDataset(train_data, y_train),
@@ -55,7 +52,7 @@ if __name__ == '__main__':
     input_size = train_data.size(1)
     output_size = 10
 
-    model = SimpleLinearModel(input_size, output_size, device=device)
+    model = SimpleLinearModel(input_size, output_size)
     
     loss_fn = nn.CrossEntropyLoss()
     batch_size = 32
@@ -74,9 +71,9 @@ if __name__ == '__main__':
     train_res = trainer.predict(train_data)
     val_res = trainer.predict(val_data)
     test_res = trainer.predict(test_data)
-    print(f"Train accuracy: {100 * accuracy_score(train_res.cpu(), y_train.cpu()):.2f}%")
-    print(f"Validation accuracy: {100 * accuracy_score(val_res.cpu(), y_val.cpu()):.2f}%")
-    print(f"Test accuracy: {100 * accuracy_score(test_res.cpu(), y_test.cpu()):.2f}%")
+    print(f"Train accuracy: {100 * accuracy_score(train_res, y_train):.2f}%")
+    print(f"Validation accuracy: {100 * accuracy_score(val_res, y_val):.2f}%")
+    print(f"Test accuracy: {100 * accuracy_score(test_res, y_test):.2f}%")
 
     _, _, _, f1_train = precision_recall(trainer, train_data, y_train)
     _, _, _, f1_val = precision_recall(trainer, val_data, y_val)
