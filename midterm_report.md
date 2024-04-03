@@ -43,11 +43,16 @@ By carefully selecting and engineering features that capture the essential infor
 ### Strategy 2
 #### Methods
 For data preprocessing, we referenced the IEEE paper [4] and generated 77 features (eg. tempo, rms_mean, rms_var, etc.) for each 30-second audio. We started by importing necessary libraries like librosa for audio processing. Then extracting the meaningful features to convert raw audio signals into a structured form so that we can see the underlying patterns that can differentiate audio samples. Then, we took steps to organize the extracted features into a NumPy array, along with corresponding labels (supervised learning setup). The categorical labels are converted into numerical format and the dataset is assembled into a pandas DataFrame so that it is easier to apply further steps.
+
 The 77 features we used are:
 Mean and variance of root-mean-square of frames, spectral centroid, spectral bandwidth, spectral rolloff, zero crossing rate, harmony, 20 MFCC and 12 Chromas, and tempo as a scalar.
+
 Traditional machine learning models, such as SVM and logistic regression, have been widely used in music genre classifications. Therefore, we decided to start with them. Unlike deep learning models, traditional ML models require hand-crafted features and careful feature engineering for optimal performance [5]. This approach not only leverages the proven strengths of traditional algorithms but also underscores the significance of our custom feature extraction method. We mainly focused on logistic regression, SVM, OVO SVM, random forest classification, Gaussian naive bayes, XGBoost, which are all implemented as supervised learning.
 #### Results and Discussion
 ##### Results
+xploratory data analysis:
+![alt text](../CS4641-Project/images/exploratory1.png)
+![alt text](../CS4641-Project/images/exploratory2.png)
 The second strategy, which involves generating 77 custom features for each 30-second audio segment and applying traditional machine learning models, has shown significant improvement compared to the first approach. The results obtained using this method have reached an accuracy of 73% under 5-fold cross-validation, demonstrating the effectiveness of feature engineering and the selected machine learning algorithms.
 ![alt text](../CS4641-Project/images/confusion_mat_lr.png)
 ![alt text](../CS4641-Project/images/confusion_mat_svm.png)
@@ -57,13 +62,36 @@ The second strategy, which involves generating 77 custom features for each 30-se
 ![alt text](../CS4641-Project/images//confusion_mat_xgboost.png)
 ![alt text](../CS4641-Project/images/traditional_acc.png)
 ![alt text](../CS4641-Project/images/traditional_f1.png)
+
+Random Forest and XGBoost show the most consistency between training and testing as they are better at generalizing and less prone to overfitting. Linear SVM and OVO SVM have decent generalization with a lower discrepancy between training and testing performances compared to Gaussian NB. Gaussian NB and Logistic Regression struggle with certain genres such as blues, country, and rock. Gaussian NB shows signs of overfitting.
+
+OVO SVM holds the highest test accuracy (72.87%). Gaussian NB presents the lowest accuracy (52.75%).
+
+OVO SVM holds the highest F1 score (0.73), indicating a strong balance between precision and recall, whereas Gaussian NB has the lowest F1 (0.51), which is consistent with the confusion matrix where it faces challenges in several genres and overfitting.
+
+OVO SVM in this case presents the most well-performing result. This might be due to several factors. The audio data, when transformed into features like MFCCs, Chroma, etc., usually result in a high-dimensional space. Each dimension represents a particular characteristic of the sound. The SVM with RBF kernel excels in such environments as it does not get overwhelmed by the number of features and instead uses them to construct a hyperplane that can separate the genres with maximum margin. The RBF kernel is particularly adept at dealing with non-linearity. SVM is based on the concept of the distance between the separating hyperplane and the nearest points from both classes. Maximizing the margin tends to increase the model’s robustness and its ability to generalize. The SVM’s regularization parameter C also plays a pivotal role in controlling the trade-off between achieving a large margin and minimizing the classification error. This can prevent the model from overfitting.
+
+We also did hyperparameter tuning on all six traditional machine learning models,  but the test accuracy increased by a maximum of 1% for logistic regression and random forest, whereas other models remain about the same, so we figured to use default values instead.
+
 ##### Problem
 It is important to acknowledge that manual feature selection can be a challenging and time-consuming process. It requires domain expertise and extensive experimentation to identify the most informative and discriminative features for music genre classification. Despite the improvement in accuracy, the current result of 73% still falls short of our desired goal of achieving a satisfactory model with a test accuracy exceeding 80%.
-##### Potential Solution (Next Step)
-To further enhance the performance of our music genre classification system, we propose two potential solutions. Firstly, we can expand the training dataset by splitting each 30-second audio segment into ten 3-second segments. This approach would effectively increase the size of the training set by a factor of ten, providing more diverse and representative examples for the models to learn from. By exposing the models to a larger variety of audio snippets, we aim to improve their ability to generalize and capture the nuances of different music genres.
+
+### Potential Solution (Next Step)
+To further enhance the performance of our music genre classification system, we propose some potential solutions. Firstly, we can expand the training dataset by splitting each 30-second audio segment into ten 3-second segments. This approach would effectively increase the size of the training set by a factor of ten, providing more diverse and representative examples for the models to learn from. By exposing the models to a larger variety of audio snippets, we aim to improve their ability to generalize and capture the nuances of different music genres.
+
+For each 30-second audio $a_i$, we do the following preprocessing:
+
+- Generate $n$ equal-length subsamples $a_{i0}, \dots a_{in}$ of $a_i$
+
+- Generate $m$ (in our current implementation $m=77$) features for each subsample $a_{ij}$ to get vector representation $x_{ij} \in \mathbb{R}^m$.
+
+- Train a machine-learning model that takes $x_{ij}$ as input and outputs a $(10,)$-shape vector $w_{ij}$, with  entry $i$ represents the probability (or confidence) that the three-second sample $a_{ij}$ belongs to class $i$.
+
+- Classify sample $a_i$ based on the mode of all $w_{ij}$ whose value is greater than a pre-set threshold.
+
 Secondly, we can explore the application of deep learning models, such as Multilayer Perceptron (MLP), for more intelligent feature selection. Deep learning models have the capability to automatically learn and extract relevant features from raw data, reducing the reliance on manual feature engineering. By leveraging the power of deep neural networks, we can potentially discover more complex and discriminative patterns in the audio signals, leading to improved classification accuracy.
 
-### Next Steps
+Additionally, we could classify the spectrograms using pretrained CNN by generating spectrograms on the raw audios and fine-tune a reliable, well-performing CNN architecture such as VGG / ResNet.
 
 ### References
 [1]: Tzanetakis, G. and Cook, P. (2002) 'Musical genre classification of Audio Signals', IEEE Transactions on Speech and Audio Processing, 10(5), pp. 293-302. doi:10.1109/tsa.2002.800560.\
