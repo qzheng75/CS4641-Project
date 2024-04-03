@@ -6,7 +6,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.model_selection import StratifiedKFold
 from collections import Counter
-
+import pandas as pd
 
 def audio_dataset_split(data, label, train_val_test_ratio=None, random_state=None):
     if train_val_test_ratio is None:
@@ -177,12 +177,14 @@ def splitPredicting(model, data, dataSet):
     return np.array(prediction)
 
 
-def splitTabularPredicting(model, index, dataSet):
+def splitTabularPredicting(model, index, dataSet, scaler, pca):
     """
     first find the sliced 10 data for each data in the testing data, then do the prediction to all 10 data.
     Pick the mode of the prediction to be the final prediction, then compute the accuracy of this prediction.
     Note that the first slice of filename "blues.00000.wav" is named as "blues.00000.0.wav"
     Args:
+        pca: principal component analysis object
+        scaler: scaler used to scale data
         index: the index columns of testing data
         model: the model we trained
         dataSet: The whole data set include the testing data
@@ -193,6 +195,8 @@ def splitTabularPredicting(model, index, dataSet):
     for i in range(len(index)):
         songIndex = index.iloc[i]
         sliceRow = dataSet[dataSet['index'] == songIndex].drop(['label', 'index'], axis=1)
+        sliceRow = pd.DataFrame(scaler.transform(sliceRow), columns=sliceRow.columns)
+        sliceRow = pca.transform(sliceRow)
         slice_prediction = model.predict(sliceRow)
         prediction.append(Counter(slice_prediction).most_common(1)[0][0])
     return np.array(prediction)
