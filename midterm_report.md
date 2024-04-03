@@ -2,6 +2,7 @@
 layout: default
 title: Midterm Checkpoint
 description: A checkpoint to make sure major progress is made
+mathjax: true
 ---
 
 ## Midterm Checkpoint
@@ -79,15 +80,15 @@ It is important to acknowledge that manual feature selection can be a challengin
 ### Potential Solution (Next Step)
 To further enhance the performance of our music genre classification system, we propose some potential solutions. Firstly, we can expand the training dataset by splitting each 30-second audio segment into ten 3-second segments. This approach would effectively increase the size of the training set by a factor of ten, providing more diverse and representative examples for the models to learn from. By exposing the models to a larger variety of audio snippets, we aim to improve their ability to generalize and capture the nuances of different music genres.
 
-For each 30-second audio $$a_i$$, we do the following preprocessing:
+For each 30-second audio $a_i$, we do the following preprocessing:
 
-- Generate $$n$$ equal-length subsamples $$a_{i0}, \dots a_{in}$ of $a_i$$
+- Generate $n$ equal-length subsamples $a_{i0}, \dots a_{in}$ of $a_i$
 
-- Generate $$m$$ (in our current implementation $$m=77$$) features for each subsample $$a_{ij}$$ to get vector representation $$x_{ij} \in \mathbb{R}^m$$.
+- Generate $m$ (in our current implementation $m=77$) features for each subsample $a_{ij}$ to get vector representation $x_{ij} \in \mathbb{R}^m$.
 
-- Train a machine-learning model that takes $$x_{ij}$$ as input and outputs a $$(10,)$$-shape vector $$w_{ij}$$, with  entry $$i$$ represents the probability (or confidence) that the three-second sample $$a_{ij}$$ belongs to class $$i$$.
+- Train a machine-learning model that takes $x_{ij}$ as input and outputs a $(10,)$-shape vector $w_{ij}$, with  entry $i$ represents the probability (or confidence) that the three-second sample $a_{ij}$ belongs to class $i$.
 
-- Classify sample $$a_i$$ based on the mode of all $$w_{ij}$$ whose value is greater than a pre-set threshold.
+- Classify sample $a_i$ based on the mode of all $w_{ij}$ whose value is greater than a pre-set threshold.
 
 Secondly, we can explore the application of deep learning models, such as Multilayer Perceptron (MLP), for more intelligent feature selection. Deep learning models have the capability to automatically learn and extract relevant features from raw data, reducing the reliance on manual feature engineering. By leveraging the power of deep neural networks, we can potentially discover more complex and discriminative patterns in the audio signals, leading to improved classification accuracy.
 
