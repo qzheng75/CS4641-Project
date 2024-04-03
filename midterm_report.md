@@ -22,6 +22,9 @@ The primary issue addressed is the use of machine learning techniques to classif
 
 ### Strategy 1 (Initial Approach)
 #### Methods
+Exploratory data analysis (visualization of a MFCC & Chroma plot):
+![alt text](../CS4641-Project/images/exploratory1.png)
+![alt text](../CS4641-Project/images/exploratory2.png)
 In the data preprocessing stage, we generate 12-channel Mel-Frequency Cepstral Coefficients (MFCC) and Chroma graphs along with their first and second derivatives as representations of the raw audio signals. MFCC and Chroma features are widely used in music genre classification tasks as they capture essential information about the audio's spectral and harmonic content. The data preprocessing pipeline is illustrated in the following workflow:
 ![alt text](../CS4641-Project/images/strategy1_preprocessing.png)
 The preprocessing pipeline ensures that the raw audio signals are transformed into a suitable format for further analysis and modeling.
@@ -50,9 +53,6 @@ Mean and variance of root-mean-square of frames, spectral centroid, spectral ban
 Traditional machine learning models, such as SVM and logistic regression, have been widely used in music genre classifications. Therefore, we decided to start with them. Unlike deep learning models, traditional ML models require hand-crafted features and careful feature engineering for optimal performance [5]. This approach not only leverages the proven strengths of traditional algorithms but also underscores the significance of our custom feature extraction method. We mainly focused on logistic regression, SVM, OVO SVM, random forest classification, Gaussian naive bayes, XGBoost, which are all implemented as supervised learning.
 #### Results and Discussion
 ##### Results
-xploratory data analysis:
-![alt text](../CS4641-Project/images/exploratory1.png)
-![alt text](../CS4641-Project/images/exploratory2.png)
 The second strategy, which involves generating 77 custom features for each 30-second audio segment and applying traditional machine learning models, has shown significant improvement compared to the first approach. The results obtained using this method have reached an accuracy of 73% under 5-fold cross-validation, demonstrating the effectiveness of feature engineering and the selected machine learning algorithms.
 ![alt text](../CS4641-Project/images/confusion_mat_lr.png)
 ![alt text](../CS4641-Project/images/confusion_mat_svm.png)
@@ -79,15 +79,15 @@ It is important to acknowledge that manual feature selection can be a challengin
 ### Potential Solution (Next Step)
 To further enhance the performance of our music genre classification system, we propose some potential solutions. Firstly, we can expand the training dataset by splitting each 30-second audio segment into ten 3-second segments. This approach would effectively increase the size of the training set by a factor of ten, providing more diverse and representative examples for the models to learn from. By exposing the models to a larger variety of audio snippets, we aim to improve their ability to generalize and capture the nuances of different music genres.
 
-For each 30-second audio $a_i$, we do the following preprocessing:
+For each 30-second audio $$a_i$$, we do the following preprocessing:
 
-- Generate $n$ equal-length subsamples $a_{i0}, \dots a_{in}$ of $a_i$
+- Generate $$n$$ equal-length subsamples $$a_{i0}, \dots a_{in}$ of $a_i$$
 
-- Generate $m$ (in our current implementation $m=77$) features for each subsample $a_{ij}$ to get vector representation $x_{ij} \in \mathbb{R}^m$.
+- Generate $$m$$ (in our current implementation $$m=77$$) features for each subsample $$a_{ij}$$ to get vector representation $$x_{ij} \in \mathbb{R}^m$$.
 
-- Train a machine-learning model that takes $x_{ij}$ as input and outputs a $(10,)$-shape vector $w_{ij}$, with  entry $i$ represents the probability (or confidence) that the three-second sample $a_{ij}$ belongs to class $i$.
+- Train a machine-learning model that takes $$x_{ij}$$ as input and outputs a $$(10,)$$-shape vector $$w_{ij}$$, with  entry $$i$$ represents the probability (or confidence) that the three-second sample $$a_{ij}$$ belongs to class $$i$$.
 
-- Classify sample $a_i$ based on the mode of all $w_{ij}$ whose value is greater than a pre-set threshold.
+- Classify sample $$a_i$$ based on the mode of all $$w_{ij}$$ whose value is greater than a pre-set threshold.
 
 Secondly, we can explore the application of deep learning models, such as Multilayer Perceptron (MLP), for more intelligent feature selection. Deep learning models have the capability to automatically learn and extract relevant features from raw data, reducing the reliance on manual feature engineering. By leveraging the power of deep neural networks, we can potentially discover more complex and discriminative patterns in the audio signals, leading to improved classification accuracy.
 
