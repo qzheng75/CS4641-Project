@@ -29,6 +29,7 @@ class ModelTrainer:
         self.loss_fn = loss_fn
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
+        self.loss = {'train': [], 'val': [], 'test': []}
     
     def get_dataloaders(self, datasets: dict):
         return {
@@ -75,6 +76,9 @@ class ModelTrainer:
             batch_train_loss = np.mean(batch_train_loss)
             batch_val_loss = self.validate(split='val')
             batch_test_loss = self.validate(split='test')
+            self.loss['train'].append(batch_train_loss)
+            self.loss['val'].append(batch_val_loss)
+            self.loss['test'].append(batch_test_loss)
             end_time = time()
 
             logging.info(f"Epoch {epoch+1:04d}, Learning rate: {self.optimizer.param_groups[0]['lr']:.6f}, "
@@ -109,6 +113,9 @@ class ModelTrainer:
                 loss = self.loss_fn(out, targets)
             batch_loss.append(loss.item())
         return np.mean(batch_loss)
+    
+    def get_loss_record(self):
+        return self.loss
     
     def predict(self, X):
         self.model.eval()
