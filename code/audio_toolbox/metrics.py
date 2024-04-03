@@ -196,7 +196,7 @@ def splitTabularPredicting(model, index, dataSet, scaler, pca):
         songIndex = index.iloc[i]
         sliceRow = dataSet[dataSet['index'] == songIndex].drop(['label', 'index'], axis=1)
         sliceRow = pd.DataFrame(scaler.transform(sliceRow), columns=sliceRow.columns)
-        sliceRow = pca.transform(sliceRow)
+        #sliceRow = pca.transform(sliceRow)
         slice_prediction = model.predict(sliceRow)
         prediction.append(Counter(slice_prediction).most_common(1)[0][0])
     return np.array(prediction)
