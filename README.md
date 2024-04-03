@@ -16,14 +16,16 @@ This folder contains different components used in the project.
 
 Several jupyter notebooks are provided to demo tasks within the project.
 
+- `3_sec_tabular_ml_modeling.ipynb`: modeling on tabular data extracted from 3-second audio clips
 - `explorations.ipynb`: demo plotting generated features of audios.
+- `generate_30sec_tabular_dataset.ipynb`: generation of a tabular dataset from 30-second audio clips.
+- `generate_3sec_tabular_dataset.ipynb`: generation of a tabular dataset from 3-second audio clips.
 - `generate_full_dataset.ipynb`: compile the full dataset used for training.
 - `generate_image_dataset.ipynb`: prepare an image-based dataset from audio data.
-- `generate_tabular_dataset.ipynb`: generate a tabular dataset from audio features.
-- `mlp_training.ipynb`: (started) training a Multilayer Perceptron on the audio data
-- `tabular_ml_modeling.ipynb`: modeling with traditional machine learning techniques on tabular data.
-- `traditional_ml_modeling.ipynb`: demo fitting some machine learning models for the classification task
-- `VGG_ft.ipynb`: (started) fine-tuning a pre-trained VGG network on audio-derived image data.
+- `mlp_training.ipynb`: training of a Multilayer Perceptron (MLP) on the generated datasets.
+- `slicing_random_forest.ipynb`: application of the Random Forest algorithm on sliced audio data.
+- `strategy_one.ipynb`: implementation of the first strategy for audio analysis.
+- `tabular_ml_modeling.ipynb`: machine learning modeling on tabular data.
 
 ## To run docker container:
 
