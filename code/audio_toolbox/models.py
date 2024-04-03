@@ -3,21 +3,26 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-
-class SimpleLinearModel(nn.Module):
-    def __init__(self, input_size, output_size, hidden_dim=64, dropout_prob=0., device='cpu'):
-        super(SimpleLinearModel, self).__init__()
-        self.linear = nn.Sequential(nn.Linear(input_size, hidden_dim),
-                                    nn.ReLU(),
-                                    nn.Dropout(dropout_prob),
-                                    nn.Linear(hidden_dim, hidden_dim),
-                                    nn.ReLU(),
-                                    nn.Dropout(dropout_prob),
-                                    nn.Linear(hidden_dim, output_size)).to(device)
-
+class LinearModel(nn.Module):
+    def __init__(self, input_size, output_size, hidden_dim=128, num_layers=3, dropout_prob=0.2, device='cpu'):
+        super(LinearModel, self).__init__()
+        
+        layers = []
+        for i in range(num_layers):
+            if i == 0:
+                layers.append(nn.Linear(input_size, hidden_dim))
+            else:
+                layers.append(nn.Linear(hidden_dim, hidden_dim))
+            layers.append(nn.BatchNorm1d(hidden_dim))
+            layers.append(nn.LeakyReLU())
+            layers.append(nn.Dropout(dropout_prob))
+        
+        layers.append(nn.Linear(hidden_dim, output_size))
+        
+        self.model = nn.Sequential(*layers).to(device)
+    
     def forward(self, x):
-        # Assuming x is of shape (batch_size, input_size)
-        return self.linear(x.view(x.shape[0], -1))
+        return self.model(x.view(x.shape[0], -1))
 
 class OneHotCrossEntropyLoss(nn.Module):
     def __init__(self):

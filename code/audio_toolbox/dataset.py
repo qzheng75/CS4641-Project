@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from audiomentations import Compose, AddGaussianNoise, TimeStretch, PitchShift, Shift
 import librosa
+from librosa import feature, effects
 import torch
 from torch.utils.data import Dataset
 
@@ -369,41 +370,74 @@ class AudioImageDataset(Dataset):
         """
         return self.X[index], self.labels[index]
 
-def visualize_confusion_matrices(conf_matrices, splits, suptitle):
 
-    # Create subplots
-    fig, axes = plt.subplots(1, len(splits), figsize=(15, 5))
+class SplitedDataset(Dataset):
+    def __init__(self, root_folder, filenames, labels,
+                 n_splits=10,
+                 name='Audio dataset',
+                 label_encoding='Label',
+                 device='cpu', **kwargs):
+        super(SplitedDataset, self).__init__()
+        self.root_folder = root_folder
+        self.dataset_name = name
+        self.n_splits = n_splits
+        self.device = device  
+                
+        self.filenames = filenames
+        self.raw_labels = labels
+        self.kwargs = kwargs
+        
+        if label_encoding == 'Onehot':
+            self.encoder = OneHotEncoder()
+            self.labels = self.encoder.fit_transform(np.array(labels).reshape(-1, 1))
+            self.num_classes = self.labels.shape[1]
+        else:
+            self.encoder = LabelEncoder()
+            self.labels = self.encoder.fit_transform(np.array(labels))
+            self.num_classes = np.max(self.labels) + 1
+        
+        raw_audios = [self.__load_from_folder(i) for i in tqdm(range(len(filenames)), desc=f"Loading audios for {self.dataset_name}")]
+        splited_audios = [self.__split_audio(*audio, self.n_splits) for audio in raw_audios]
+        
+        splited_audios_with_ft = [
+            [self.__generate_features(splited_audios[i][0][j], splited_audios[i][1])
+             for j in range(len(splited_audios[i][0]))] for i in range(len(splited_audios))
+        ]
+        self.X = np.stack(splited_audios_with_ft)
+        
+    
+    def __split_audio(self, x, sr, n) -> List:
+        split_length = len(x) // n
+        split_audios = [x[i * split_length : (i + 1) * split_length] for i in range(n)]
+        return split_audios, sr
+    
+    def __load_from_folder(self, idx: int) -> np.ndarray:
+        filename, label = self.filenames[idx], self.raw_labels[idx]
+        audio_path = os.path.join(self.root_folder, 'genres_original', label, filename)
+        x, sample_rate = librosa.load(audio_path)
+        return x, sample_rate
+    
+    def __generate_features(self, x, sample_rate):
+        rms = feature.rms(y=x)
+        spectral_centroid = feature.spectral_centroid(y=x, sr=sample_rate)
+        spectral_bandwidth = feature.spectral_bandwidth(y=x, sr=sample_rate)
+        spectral_rolloff = feature.spectral_rolloff(y=x, sr=sample_rate)
+        zero_crossing_rate = feature.zero_crossing_rate(y=x)
+        harmony = effects.harmonic(y=x)
+        tempo = feature.tempo(y=x, sr=sample_rate)
+        mfccs = feature.mfcc(y=x, sr=sample_rate, n_mfcc=20)
+        chromas = feature.chroma_stft(y=x, sr=sample_rate, n_chroma=12)
 
-    # Plot each confusion matrix
-    for i, (conf_matrix, split) in enumerate(zip(conf_matrices, splits)):
-        ax = axes[i]
-        ax.imshow(conf_matrix, cmap='Blues', interpolation='nearest')
+        features = [tempo[0]]
+        features.extend([rms.mean(), rms.var(),
+                        spectral_centroid.mean(), spectral_centroid.var(),
+                        spectral_bandwidth.mean(), spectral_bandwidth.var(),
+                        spectral_rolloff.mean(), spectral_rolloff.var(),
+                        zero_crossing_rate.mean(), zero_crossing_rate.var(),
+                        harmony.mean(), harmony.var()])
+        features.extend(mfccs.mean(axis=1).tolist())
+        features.extend(mfccs.var(axis=1).tolist())
+        features.extend(chromas.mean(axis=1).tolist())
+        features.extend(chromas.var(axis=1).tolist())
 
-        # Add color bar
-        cb = ax.figure.colorbar(ax.imshow(conf_matrix, cmap='Blues', interpolation='nearest'), ax=ax, fraction=0.046, pad=0.04)
-
-        # Add labels
-        ax.set_title(f'{split} Confusion Matrix')
-        ax.set_xlabel('Predicted Label')
-        ax.set_ylabel('True Label')
-        ax.grid(False)
-
-        # Add tick marks
-        class_names = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz',
-            'metal', 'pop', 'reggae', 'rock']
-        tick_marks = np.arange(len(class_names))
-        ax.set_xticks(tick_marks)
-        ax.set_yticks(tick_marks)
-        ax.set_xticklabels(class_names, rotation=45)
-        ax.set_yticklabels(class_names)
-
-        # Add text annotations
-        thresh = conf_matrix.max() / 2.
-        for i in range(conf_matrix.shape[0]):
-            for j in range(conf_matrix.shape[1]):
-                ax.text(j, i, format(conf_matrix[i, j], 'd'),
-                        horizontalalignment="center",
-                        color="white" if conf_matrix[i, j] > thresh else "black")
-
-        # plt.tight_layout()
-        fig.suptitle(suptitle, fontsize=16)
+        return features

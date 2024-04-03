@@ -45,6 +45,7 @@ class ModelTrainer:
         save = train_config.get('save', False)
         num_epochs = train_config.get('num_epochs', 20)
         batch_tqdm = train_config.get('batch_tqdm', False)
+        log_metrics = train_config.get('log_metrics', True)
         
         if save:
             save_dir = train_config.get('save_dir', 'training_results')
@@ -81,11 +82,12 @@ class ModelTrainer:
             self.loss['test'].append(batch_test_loss)
             end_time = time()
 
-            logging.info(f"Epoch {epoch+1:04d}, Learning rate: {self.optimizer.param_groups[0]['lr']:.6f}, "
-                        f"Training loss: {batch_train_loss:.5f}, "
-                        f"Val loss: {batch_val_loss:.5f}, "
-                        f"Test loss: {batch_test_loss:.5f}, "
-                        f"Epoch time: {end_time - start_time:.5f}")
+            if log_metrics:
+                logging.info(f"Epoch {epoch+1:04d}, Learning rate: {self.optimizer.param_groups[0]['lr']:.6f}, "
+                            f"Training loss: {batch_train_loss:.5f}, "
+                            f"Val loss: {batch_val_loss:.5f}, "
+                            f"Test loss: {batch_test_loss:.5f}, "
+                            f"Epoch time: {end_time - start_time:.5f}")
 
             if batch_val_loss < min_loss:
                 min_loss = batch_val_loss
