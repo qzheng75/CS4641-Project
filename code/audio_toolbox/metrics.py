@@ -130,19 +130,18 @@ def splitPredicting(model, data, dataSet):
     return np.array(prediction)
 
 
-def splitTabularPredicting(model, data, dataSet):
+def splitTabularPredicting(model, index, dataSet):
     """
     first find the sliced 10 data for each data in the testing data, then do the prediction to all 10 data.
     Pick the mode of the prediction to be the final prediction, then compute the accuracy of this prediction.
     Note that the first slice of filename "blues.00000.wav" is named as "blues.00000.0.wav"
     Args:
+        index: the index columns of testing data
         model: the model we trained
-        data: testing data
         dataSet: The whole data set include the testing data
     Returns:
         result: the predicted label
     """
-    index = data['index']
     prediction = []
     for i in range(len(index)):
         songIndex = index.iloc[i]
