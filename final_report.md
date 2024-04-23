@@ -193,7 +193,7 @@ However, for the best-performing strategy 3, such analysis becomes an impossible
 ##### Data Preprocessing
 Strategy 1: MFCC & Chroma generation, PCA
 
-Strategy 2: Manual feature engineering, data splitting\
+Strategy 2: Manual feature engineering, data splitting
 
 Strategy 3: Spectrogram generation, model-specific data processing (e.g., Cropping, Normalization, Channel flipping, etc.)
 
