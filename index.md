@@ -11,3 +11,5 @@ The following links will direct you to the correspounding pages:
 [Project Proposal](./project_proposal.md)
 
 [Midterm Report](./midterm_report.md)
+
+[Final Report](./final_report.md)
