@@ -2,30 +2,32 @@
 
 All code for the project is stored in the `code` folder
 
-### Audio Toolbox
+### Strategy 1: Stacked MFCC & Chroma
 
-This folder contains different components used in the project.
+Files related to strategy one include:
 
-- `dataset.py`: contains the class `AudioOTFDataset`, used for generating tensor representations of the audios stored as *.wav* files on the fly. It currently contains basic feature engineering techniques for audios (**will contain more feature engineering techniques**).
-- `metrics.py`: contains helper methods to calculate metrics for the classification task.
-- `models.py`: **will** contain deep learning models developed for the project.
-- `trainer.py`: contains the trainer used to train deep learning models under the pytorch framework.
-- `visualize.py`: includes tools for visualizing audio data and model results.
+- `audio_toolbox/dataset.py`: contains the class `AudioOTFDataset`, used for generating vectorized representations of the audios stored as *.wav* files on the fly.
+- `notebooks/dataset_generation/generate_full_dataset.ipynb`: the notebook to generate and save the datasets for strategy one.
+- `notebooks/strategy_one.ipynb`: the notebook to preprocess and fit ML models on the dataset.
+- `notebooks/mlp_strategy_one.ipynb`: the notebook to use MLP fit the dataset.
 
-### Jupyter notebooks
+### Strategy 2: Manual Feature Engineering
 
-Several jupyter notebooks are provided to demo tasks within the project.
+Files related to strategy two include:
 
-- `3_sec_tabular_ml_modeling.ipynb`: modeling on tabular data extracted from 3-second audio clips
-- `explorations.ipynb`: demo plotting generated features of audios.
-- `generate_30sec_tabular_dataset.ipynb`: generation of a tabular dataset from 30-second audio clips.
-- `generate_3sec_tabular_dataset.ipynb`: generation of a tabular dataset from 3-second audio clips.
-- `generate_full_dataset.ipynb`: compile the full dataset used for training.
-- `generate_image_dataset.ipynb`: prepare an image-based dataset from audio data.
-- `mlp_training.ipynb`: training of a Multilayer Perceptron (MLP) on the generated datasets.
-- `slicing_random_forest.ipynb`: application of the Random Forest algorithm on sliced audio data.
-- `strategy_one.ipynb`: implementation of the first strategy for audio analysis.
-- `tabular_ml_modeling.ipynb`: machine learning modeling on tabular data.
+- `notebooks/dataset_generation/generate_30sec_tabular_dataset.ipynb`: the notebook to generate features for audios and save the datasets for strategy 2.1.
+- `notebooks/tabular_ml_modeling.ipynb.ipynb`: the notebook to preprocess and fit ML models on the generated datasets with strategy 2.1.
+- `audio_toolbox/datasets.py`: contains `SplitedDataset`, which involved audio spliting and feature computation methods.
+- `notebooks/dataset_generation/generate_split_dataset.ipynb`: the notebook to generated splited audios and compute features for both the original audio and the audio segments for strategy 2.2.
+- `notebooks/split_weight_training_3_sec.ipynb` and `notebooks/split_weight_training_6_sec.ipynb`: the notebook for fitting ML models with strategy 2.2.
+  
+### Strategy 3: Two-Step VGG fine-tuning
+
+Files related to strategy three include:
+
+- `audio_toolbox/datasets.py`: contains `AudioImageDataset`, which is used to generate spectrograms for audios.
+- `notebooks/dataset_generation/generate_image_dataset.ipynb`: the notebook to generate spectrograms for audios and save the datasets for strategy 3.
+- `notebooks/VGG_fine_tuning.ipynb`: the notebook for fine-tuning VGG according to strategy 3.
 
 ## To run docker container:
 
