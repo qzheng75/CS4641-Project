@@ -8,7 +8,7 @@ mathjax: true
 # Final Report
 
 ## Video Presentation
-Here is the [video](https://youtu.be/cDLpC4zQck0?feature=shared). 
+Here is the [video](https://youtu.be/tg1PLnNZEkY?feature=shared). 
 <em>In case some images are blurry, here is the [powerpoint](https://docs.google.com/presentation/d/1ZXGhcdAGeFXCk3ihe1iL1aWWWi3Pb9FFnTlNrgS7FUw/edit?usp=sharing).</em>
 
 ## Introduction/Background
