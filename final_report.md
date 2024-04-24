@@ -9,7 +9,7 @@ mathjax: true
 
 ## Video Presentation
 Here is the [video](https://youtu.be/cDLpC4zQck0?feature=shared). 
-<em>In case some images are blurry, here is the [powerpoint](./Video_Slides.pdf).</em>
+<em>In case some images are blurry, here is the [powerpoint](https://docs.google.com/presentation/d/1ZXGhcdAGeFXCk3ihe1iL1aWWWi3Pb9FFnTlNrgS7FUw/edit?usp=sharing).</em>
 
 ## Introduction/Background
 The intersection of music and machine learning has been a vibrant area of research, with significant breakthroughs in both music classification and generation. In 2002, Tzanetakis proposed three feature sets specifically for genre classification [1], which laid the groundwork for following studies. Li further refined feature extraction by proposing Daubechies Wavelet Coefficient Histograms [2]. Method-wise, Lerch [3] proposed a hierarchical system, granting expansion capabilities and flexibility. Model-wise, both deep-learning and traditional machine-learning approaches are applied and examined [4].
