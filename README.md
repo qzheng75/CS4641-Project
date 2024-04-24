@@ -2,15 +2,23 @@
 
 All code for the project is stored in the `code` folder
 
-### Audio Toolbox
+### Strategy 1: Stacked MFCC & Chroma
 
-This folder contains different components used in the project.
+Files related to strategy one include:
 
-- `dataset.py`: contains the class `AudioOTFDataset`, used for generating tensor representations of the audios stored as *.wav* files on the fly. It currently contains basic feature engineering techniques for audios (**will contain more feature engineering techniques**).
-- `metrics.py`: contains helper methods to calculate metrics for the classification task.
-- `models.py`: **will** contain deep learning models developed for the project.
-- `trainer.py`: contains the trainer used to train deep learning models under the pytorch framework.
-- `visualize.py`: includes tools for visualizing audio data and model results.
+- `audio_toolbox/dataset.py`: contains the class `AudioOTFDataset`, used for generating vectorized representations of the audios stored as *.wav* files on the fly.
+- `notebooks/dataset_generation/generate_full_dataset.ipynb`: the notebook to generate and save the datasets for strategy one.
+- `notebooks/strategy_one.ipynb`: the notebook to preprocess and fit ML models on the dataset.
+- `notebooks/mlp_strategy_one.ipynb`: the notebook to use MLP fit the dataset.
+
+### Strategy 2: Manual Feature Engineering
+
+Files related to strategy one include:
+
+- `audio_toolbox/dataset.py`: contains the class `AudioOTFDataset`, used for generating vectorized representations of the audios stored as *.wav* files on the fly.
+- `notebooks/dataset_generation/generate_full_dataset.ipynb`: the notebook to generate and save the datasets for strategy one.
+- `notebooks/strategy_one.ipynb`: the notebook to preprocess and fit ML models on the dataset.
+- `notebooks/mlp_strategy_one.ipynb`: the notebook to use MLP fit the dataset.
 
 ### Jupyter notebooks
 
