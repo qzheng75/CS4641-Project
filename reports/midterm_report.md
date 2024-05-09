@@ -24,17 +24,17 @@ The primary issue addressed is the use of machine learning techniques to classif
 ### Strategy 1 (Initial Approach)
 #### Methods
 Exploratory data analysis (visualization of a MFCC & Chroma plot):
-![alt text](../CS4641-Project/images/exploratory1.png)
-![alt text](../CS4641-Project/images/exploratory2.png)
+![alt text](../GTZAN-Music-Classification/images/exploratory1.png)
+![alt text](../GTZAN-Music-Classification/images/exploratory2.png)
 In the data preprocessing stage, we generate 12-channel Mel-Frequency Cepstral Coefficients (MFCC) and Chroma graphs along with their first and second derivatives as representations of the raw audio signals. MFCC and Chroma features are widely used in music genre classification tasks as they capture essential information about the audio's spectral and harmonic content. The data preprocessing pipeline is illustrated in the following workflow:
-![alt text](../CS4641-Project/images/strategy1_preprocessing.png)
+![alt text](../GTZAN-Music-Classification/images/strategy1_preprocessing.png)
 The preprocessing pipeline ensures that the raw audio signals are transformed into a suitable format for further analysis and modeling.
 After obtaining a vectorized representation of each audio signal, we proceed to fit the dataset using various machine learning models. The workflow for model fitting is depicted below (results are based on a 5-fold cross validation):
-![alt text](../CS4641-Project/images/strategy1_model.png)
+![alt text](../GTZAN-Music-Classification/images/strategy1_model.png)
 To reduce the dimensionality of the preprocessed data and improve model performance, we apply Principal Component Analysis (PCA) before fitting most of the models. By reducing the dimensionality, we aim to mitigate the curse of dimensionality and enhance the efficiency of the models.
 #### Results and Discussion
 The best-performing model is Gaussian Naive Bayes, with a confusion matrix as follows:
-![alt text](../CS4641-Project/images/strategy1_data.png)
+![alt text](../GTZAN-Music-Classification/images/strategy1_data.png)
 
 The initial approach of using the entire MFCC and Chroma graphs as features for music genre classification unfortunately yielded suboptimal results. Despite several attempts at hyperparameter tuning, the performance of the models remained around 60%. This suggests that there are limitations to this strategy that hinder further improvement.
 
@@ -55,14 +55,14 @@ Traditional machine learning models, such as SVM and logistic regression, have b
 #### Results and Discussion
 ##### Results
 The second strategy, which involves generating 77 custom features for each 30-second audio segment and applying traditional machine learning models, has shown significant improvement compared to the first approach. The results obtained using this method have reached an accuracy of 73% under 5-fold cross-validation, demonstrating the effectiveness of feature engineering and the selected machine learning algorithms.
-![alt text](../CS4641-Project/images/confusion_mat_lr.png)
-![alt text](../CS4641-Project/images/confusion_mat_svm.png)
-![alt text](../CS4641-Project/images/confusion_mat_ovosvm.png)
-![alt text](../CS4641-Project/images/confusion_mat_randfor.png)
-![alt text](../CS4641-Project/images/confusion_mat_gaussiannb.png)
-![alt text](../CS4641-Project/images//confusion_mat_xgboost.png)
-![alt text](../CS4641-Project/images/traditional_acc.png)
-![alt text](../CS4641-Project/images/traditional_f1.png)
+![alt text](../GTZAN-Music-Classification/images/confusion_mat_lr.png)
+![alt text](../GTZAN-Music-Classification/images/confusion_mat_svm.png)
+![alt text](../GTZAN-Music-Classification/images/confusion_mat_ovosvm.png)
+![alt text](../GTZAN-Music-Classification/images/confusion_mat_randfor.png)
+![alt text](../GTZAN-Music-Classification/images/confusion_mat_gaussiannb.png)
+![alt text](../GTZAN-Music-Classification/images//confusion_mat_xgboost.png)
+![alt text](../GTZAN-Music-Classification/images/traditional_acc.png)
+![alt text](../GTZAN-Music-Classification/images/traditional_f1.png)
 
 Random Forest and XGBoost show the most consistency between training and testing as they are better at generalizing and less prone to overfitting. Linear SVM and OVO SVM have decent generalization with a lower discrepancy between training and testing performances compared to Gaussian NB. Gaussian NB and Logistic Regression struggle with certain genres such as blues, country, and rock. Gaussian NB shows signs of overfitting.
 
@@ -102,7 +102,7 @@ Additionally, we could classify the spectrograms using pretrained CNN by generat
 [5] Bahuleyan, H. (2018). Music Genre Classification using Machine Learning Techniques. arXiv:1804.01149v1
 
 ### Contribution Table
-![alt text](../CS4641-Project/images/midterm_contribution.png)
+![alt text](../GTZAN-Music-Classification/images/midterm_contribution.png)
 
 ### Gantt Chart
 Here is the [Gantt Chart](https://gtvault-my.sharepoint.com/:x:/g/personal/ypan390_gatech_edu/EeUk8XSMMSFAqpbJ5cSKEDQBIkUN30qINQYGgmnCyVkJLg?e=4%3A6bQdYn&at=9&CID=8b4a2e17-0dca-5391-786c-d97bbece4005).
