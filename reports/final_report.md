@@ -33,22 +33,22 @@ This idea was inspired by the notebook available on [kaggle](https://www.kaggle.
 
 In the data preprocessing phase, we extract a set of 12-channel Mel-Frequency Cepstral Coefficients (**MFCC**) and **Chroma** features, along with their first and second derivatives, from the raw audio signals. These features are commonly employed in music genre classification tasks due to their ability to effectively capture essential spectral and harmonic information present in the audio data. The complete data preprocessing workflow is shown in the following diagram:
 
-![alt text](../GTZAN-Music-Classification/images/strategy1_preprocessing.png)
+![alt text](../images/strategy1_preprocessing.png)
 
 The preprocessing pipeline ensures that the raw audio signals are transformed into a suitable format for further analysis and modeling.
 
 Following the vectorization of each audio signal, we applied Principal Component Analysis (**PCA**) as a dimensionality reduction technique prior to fitting most of the models. Then, we proceeded to train various machine learning models on the preprocessed dataset. The model-fitting workflow for model fitting is depicted below:
 
-![alt text](../GTZAN-Music-Classification/images/strategy1_model_2.png)
+![alt text](../images/strategy1_model_2.png)
 
 #### Results
 The models are evaluated with a **10-fold cross validation**.
 
-![alt text](../GTZAN-Music-Classification/images/strategy1_barplot.png)
+![alt text](../images/strategy1_barplot.png)
 
 The best-performing model is **Gaussian Naive Bayes**, with the confusion matrix on one fold of data as follows:
 
-![alt text](../GTZAN-Music-Classification/images/strategy1_data.png)
+![alt text](../images/strategy1_data.png)
 
 The confusion matrix shows that the model performs well in predicting certain genres like pop and classical as evidenced by the high counts along the diagonal in the test matrix. However, there is significant misclassification for some genres, particularly disco being frequently misclassified as pop and country being misclassified as blues, indicating areas where the model needs improvement.
 
@@ -74,11 +74,11 @@ Following feature generation, we fit different ML models to the generated tabula
 #### Results
 The models are evaluated with a 10-fold cross validation.
 
-![alt text](../GTZAN-Music-Classification/images/strategy2.1_barplot.png)
+![alt text](../images/strategy2.1_barplot.png)
 
 The best-performing model is **SVM** with OVO as the decision type and radial basis function as the kernel, with the confusion matrix on one fold of data as follows:
 
-![alt text](../GTZAN-Music-Classification/images/strategy2.1_data.png)
+![alt text](../images/strategy2.1_data.png)
 
 #### Discussion and Reflection
 OVO SVM in this case presents the most well-performing result. This might be due to several factors. The audio data, when transformed into features like MFCCs, Chroma, etc., usually result in a high-dimensional space. Each dimension represents a particular characteristic of the sound. The SVM with RBF kernel excels in such environments as it does not get overwhelmed by the number of features and instead uses them to construct a hyperplane that can separate the genres with maximum margin. The RBF kernel is particularly adept at dealing with non-linearity. SVM is based on the concept of the distance between the separating hyperplane and the nearest points from both classes. Maximizing the margin tends to increase the model's robustness and its ability to generalize. The SVM's regularization parameter C also plays a pivotal role in controlling the trade-off between achieving a large margin and minimizing the classification error. This can prevent the model from overfitting.
@@ -91,22 +91,22 @@ This innovative idea was contributed by Yuanming Luo.
 #### Method
 This strategy is a modification of the aforementioned strategy 2.1. It stems from a simple yet insightful intuition: **a segment of an audio is also an audio**. The modified ML pipeline is demonstrated in the image below:
 
-![alt text](../GTZAN-Music-Classification/images/strategy2.2_pipeline.png)
+![alt text](../images/strategy2.2_pipeline.png)
 
 During training, the original audio sample is split into k equal-sized subsamples. For each subsample, the same 77 features are computed and stored in a corresponding datapoint. The collection of these data points, which capture different portions of the original audio, are used to train a machine learning model such as an SVM, Random Forest, or MLP.
 
 For inference on a new audio sample, the audio is similarly split into **k equal-sized subsamples**. Features are computed for each subsample to create k data points. These data points are passed into the trained ML model to get k corresponding predictions. Finally, the k predictions are **aggregated** in some fashion (e.g. majority vote) to produce a final prediction for the full original audio sample.
 
 #### Results
-![alt text](../GTZAN-Music-Classification/images/strategy2.2_barplot.png)
+![alt text](../images/strategy2.2_barplot.png)
 
 We have tried to split each audio into k=10 and k=5, and found that k=10 worked better so here are the results for k=10. These are the accuracy and F1 plots after training on all models (SVM and OVO-SVM have exactly the same statistics). **MLP** performed the best with an accuracy of approximately 79.08%, closely followed by SVM with 78.98%. The worst performance was observed with GaussianNB. Similar to accuracy, SVM also excelled in terms of the F1 score with approximately 0.773, indicating a balanced performance between precision and recall. MLP also showed competitive performance with an F1 score of 0.7728. 
 
 The best-performing models are SVM and MLP, with the confusion matrices on one fold of data as follows:
 
-![alt text](../GTZAN-Music-Classification/images/strategy2.2_data_svm.png)
+![alt text](../images/strategy2.2_data_svm.png)
 
-![alt text](../GTZAN-Music-Classification/images/strategy2.2_data_mlp.png)
+![alt text](../images/strategy2.2_data_mlp.png)
 
 #### Discussion and Reflection
 The method of splitting the audio into subsamples, computing features for each subsample, and aggregating predictions offers several advantages over simply training on features generated from the entire original audio:
@@ -133,7 +133,7 @@ To fine-tune a **pre-trained VGG model** with TensorFlow for a new task, we foll
 
 (1) Use tensorflow built in data preprocessing method to preprocess the data so that the data format aligns with the images in ImageNet, on which VGG is pretrained, as follows:
 
-![alt text](../GTZAN-Music-Classification/images/strategy3_tensorflow.png)
+![alt text](../images/strategy3_tensorflow.png)
 
 (2) Replace the original output head of the VGG model with a custom 2-layer feedforward neural network tailored to our problem.
 
@@ -143,14 +143,14 @@ To fine-tune a **pre-trained VGG model** with TensorFlow for a new task, we foll
 
 The model structure:
 
-![alt text](../GTZAN-Music-Classification/images/strategy3_model.png)
+![alt text](../images/strategy3_model.png)
 
 During step 3 and 4, we monitor the **validation accuracy** and apply **early stopping** to prevent overfitting. We select the model checkpoint with the highest validation accuracy as the final fine-tuned model. Fortunately, due to the robust tensorflow library, we went smoothly through the training process.
 
 #### Results
 With 10-fold cross validation, our model achieves average accuracy of 87.40% and average f1-score of 0.858. As an example for demonstration, the accuracy curve and the corresponding confusion matrix on the test data for fold 5 are shown below. To view accuracy curves and confusion matrices for all folds, you can refer to `code/notebooks/VGG_fine_tuning.ipynb`. It's worthy of noting that this is the first approach with which we achieve an average accuracy that is greater than 80% on test data.
 
-![alt text](../GTZAN-Music-Classification/images/strategy3_data.png)
+![alt text](../images/strategy3_data.png)
 
 #### Discussion and Reflection
 The 2-step fine-tuning process, which involves first training the output head and then fine-tuning the last convolutional block, allows the model to effectively adapt to your specific task while leveraging the pre-trained features learned from the ImageNet dataset. By gradually unfreezing layers and fine-tuning them, the model can refine its representations and capture task-specific patterns, leading to improved performance.
@@ -180,7 +180,7 @@ In comparison, Strategy 3 (VGG) requires the least amount of domain-specific kno
 #### Model interpretability
 Among the three strategies, strategy 2 yields the most explainable solution. For example, with strategy 2.1, applying logistic regression yields the following top-10 important features map:
 
-![alt text](./images/feature_importance.png)
+![alt text](../images/feature_importance.png)
 
 It's easy for us to analyze the results as follows:
 
@@ -234,7 +234,7 @@ Use the MFCC images instead of spectrograms as training data for deep learning m
 [5] Bahuleyan, H. (2018). Music Genre Classification using Machine Learning Techniques. arXiv:1804.01149v1
 
 ## Contribution Table
-![alt text](./images/final_contribution.png)
+![alt text](../images/final_contribution.png)
 
 ## Gantt Chart
 Here is the [Gantt Chart](https://gtvault-my.sharepoint.com/:x:/g/personal/ypan390_gatech_edu/EeUk8XSMMSFAqpbJ5cSKEDQBIkUN30qINQYGgmnCyVkJLg?e=4%3A6bQdYn&at=9&CID=8b4a2e17-0dca-5391-786c-d97bbece4005).

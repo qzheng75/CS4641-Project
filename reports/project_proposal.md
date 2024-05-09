@@ -69,7 +69,7 @@ A classifier that performs well (based on metrics defined above) on classifying 
 [4]: Ndou, N., Ajoodha, R., & Jadhav, A. (2021, April). Music genre classification: A review of deep-learning and traditional machine-learning approaches. In 2021 IEEE International IOT, Electronics and Mechatronics Conference (pp. 1-6). IEEE
 
 ### Contribution Table
-![alt text](/images/proposal_contribution.png)
+![alt text](../images/proposal_contribution.png)
 
 ### Gantt Chart
 Here is the [link](https://gtvault-my.sharepoint.com/:x:/g/personal/ypan390_gatech_edu/EeUk8XSMMSFAqpbJ5cSKEDQBIkUN30qINQYGgmnCyVkJLg?e=4%3A6bQdYn&at=9&CID=8b4a2e17-0dca-5391-786c-d97bbece4005) to the gantt chart.
