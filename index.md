@@ -8,8 +8,8 @@ Welcome to our CS4641 Machine Learning Project.
 
 The following links will direct you to the correspounding pages:
 
-[Project Proposal](./project_proposal.md)
+[Project Proposal](./reports/project_proposal.md)
 
-[Midterm Report](./midterm_report.md)
+[Midterm Report](./reports/midterm_report.md)
 
-[Final Report](./final_report.md)
+[Final Report](./reports/final_report.md)
